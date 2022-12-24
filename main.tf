@@ -24,3 +24,21 @@ module "artifact-registry" {
   backend_app_name           = local.backend_app_name
   frontend_app_name          = local.frontend_app_name
 }
+
+module "cloud-sql" {
+  source          = "./modules/cloud-sql"
+  target_region   = var.primary_region
+}
+
+# Cloud Build
+# マイグレーション＋バックエンドデプロイ
+# フロントエンドデプロイ
+module "cloud-build" {
+ source                      = "./modules/cloud-build"
+ gcp_project_id              = var.gcp_project_id
+ region                      = var.primary_region
+ cloudsql_instance_full_name = module.cloud-sql.blog_training_db_connection_name
+ backend_app_name            = local.backend_app_name
+ github_owner                = "cm-wada-yusuke"
+ github_app_repo_name        = "gql-nest-prisma-training"
+}
